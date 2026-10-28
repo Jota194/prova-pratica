@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Força & Foco | Reservas</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <span class="brand-mark">F&F</span>
+          <div>
+            <strong>Força & Foco</strong>
+            <small>CrossFit</small>
+          </div>
+        </div>
+        <a class="button secondary" href="/admin/login">Painel</a>
+      </div>
+    </header>
+
+    <main class="container page-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Academia de CrossFit</p>
+          <h1>Reserve sua vaga no treino</h1>
+          <p class="lead">
+            Cada sessão possui limite de vagas. Faça sua reserva com rapidez e acompanhe a disponibilidade em tempo real.
+          </p>
+          <div class="cta-row">
+            <a class="button primary" href="#reserve-form">Reservar agora</a>
+            <a class="button ghost" href="#sessions-list">Ver aulas</a>
+          </div>
+        </div>
+        <div class="status-card">
+          <h3>Disponibilidade</h3>
+          <ul>
+            <li>Controle de vagas por sessão</li>
+            <li>Reservas confirmadas imediatamente</li>
+            <li>Cancelamentos liberam a vaga</li>
+          </ul>
+        </div>
+      </section>
+
+      <% if (successMessage) { %>
+        <div class="alert success"><%= successMessage %></div>
+      <% } %>
+
+      <% if (errorMessage) { %>
+        <div class="alert error"><%= errorMessage %></div>
+      <% } %>
+
+      <section id="reserve-form" class="panel">
+        <h2>Formulário de reserva</h2>
+        <form method="post" action="/reserve" class="reserve-form">
+          <div class="field">
+            <label for="student_name">Nome completo do aluno</label>
+            <input id="student_name" name="student_name" type="text" required maxlength="80" placeholder="Ex.: Ana Souza" />
+          </div>
+
+          <div class="field">
+            <label for="session_id">Aula ou horário desejado</label>
+            <select id="session_id" name="session_id" required>
+              <option value="">Selecione uma aula</option>
+              <% sessions.forEach((session) => { %>
+                <option value="<%= session.id %>"><%= session.name %> · <%= session.date %> · <%= session.time %> · <%= session.remaining %> vagas</option>
+              <% }) %>
+            </select>
+          </div>
+
+          <button class="button primary" type="submit">Confirmar reserva</button>
+        </form>
+      </section>
+
+      <section id="sessions-list" class="panel">
+        <div class="section-header">
+          <h2>Aulas disponíveis</h2>
+          <span class="badge">Dados fictícios para demonstração</span>
+        </div>
+
+        <div class="session-grid">
+          <% if (sessions.length === 0) { %>
+            <p>Nenhuma sessão cadastrada no momento.</p>
+          <% } else { %>
+            <% sessions.forEach((session) => { %>
+              <article class="session-card <%= session.status_label %>">
+                <div class="card-top">
+                  <h3><%= session.name %></h3>
+                  <span class="pill <%= session.status_label %>"><%= session.status_label %></span>
+                </div>
+                <p><strong>Data:</strong> <%= session.date %></p>
+                <p><strong>Horário:</strong> <%= session.time %></p>
+                <p><strong>Capacidade:</strong> <%= session.capacity %></p>
+                <p><strong>Reservas ativas:</strong> <%= session.occupancy %></p>
+                <p><strong>Vagas restantes:</strong> <%= session.remaining %></p>
+              </article>
+            <% }) %>
+          <% } %>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

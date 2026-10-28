@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel administrativo | Força & Foco</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-body">
+    <main class="auth-shell">
+      <section class="panel auth-panel">
+        <h1>Login do recepcionista</h1>
+        <p>Área exclusiva para consultar e controlar as reservas.</p>
+
+        <% if (message) { %>
+          <div class="alert error"><%= message %></div>
+        <% } %>
+
+        <form method="post" action="/admin/login" class="stacked-form">
+          <div class="field">
+            <label for="username">Usuário</label>
+            <input id="username" name="username" type="text" required />
+          </div>
+          <div class="field">
+            <label for="password">Senha</label>
+            <input id="password" name="password" type="password" required />
+          </div>
+          <button class="button primary" type="submit">Entrar</button>
+        </form>
+
+        <p class="muted-text">
+          Para criar o primeiro administrador, configure as variáveis de ambiente e execute:<br />
+          <strong>npm run admin:create</strong>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

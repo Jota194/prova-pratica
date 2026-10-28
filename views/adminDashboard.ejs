@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel administrativo | Força & Foco</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-body">
+    <header class="topbar admin-header">
+      <div class="container nav">
+        <div>
+          <strong>Força & Foco</strong>
+          <small>Recepção e gestão</small>
+        </div>
+        <div class="header-actions">
+          <a class="button secondary" href="/">Site público</a>
+          <form method="post" action="/admin/logout">
+            <button class="button ghost" type="submit">Sair</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="container admin-shell">
+      <section class="panel summary-panel">
+        <h2>Resumo operacional</h2>
+        <div class="metrics">
+          <div class="metric-box">
+            <span class="metric-label">Sessões</span>
+            <strong><%= summary.total_sessions %></strong>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Vagas ocupadas</span>
+            <strong><%= summary.occupied_seats %></strong>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Capacidade total</span>
+            <strong><%= summary.total_capacity %></strong>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Reservas canceladas</span>
+            <strong><%= summary.cancelled_reservations %></strong>
+          </div>
+        </div>
+      </section>
+
+      <% if (typeof alert !== 'undefined' && alert) { %>
+        <div class="alert success"><%= alert %></div>
+      <% } %>
+
+      <section class="panel admin-grid">
+        <div class="admin-column">
+          <h3>Cadastrar/editar sessão</h3>
+          <form method="post" action="/admin/sessions" class="stacked-form">
+            <div class="field">
+              <label for="name">Nome da aula</label>
+              <input id="name" name="name" type="text" required placeholder="Ex.: HIIT Advanced" />
+            </div>
+            <div class="field">
+              <label for="date">Data</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div class="field">
+              <label for="time">Horário</label>
+              <input id="time" name="time" type="time" required />
+            </div>
+            <div class="field">
+              <label for="capacity">Capacidade máxima</label>
+              <input id="capacity" name="capacity" type="number" min="1" required />
+            </div>
+            <button class="button primary" type="submit">Salvar sessão</button>
+          </form>
+        </div>
+
+        <div class="admin-column">
+          <h3>Pesquisar aluno</h3>
+          <form method="get" action="/admin/buscar" class="stacked-form">
+            <div class="field">
+              <label for="q">Nome do aluno</label>
+              <input id="q" name="q" type="text" value="<%= search %>" placeholder="Digite o nome" />
+            </div>
+            <button class="button secondary" type="submit">Buscar</button>
+          </form>
+
+          <% if (reservations && reservations.length > 0) { %>
+            <div class="result-list">
+              <% reservations.forEach((reservation) => { %>
+                <div class="reservation-item">
+                  <strong><%= reservation.student_name %></strong>
+                  <span><%= reservation.session_name %> · <%= reservation.date %> · <%= reservation.time %></span>
+                  <span class="status-tag <%= reservation.status %>"><%= reservation.status %></span>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Controle de sessões</h2>
+        <div class="session-grid admin-session-grid">
+          <% sessions.forEach((session) => { %>
+            <article class="session-card admin-card">
+              <div class="card-top">
+                <h3><%= session.name %></h3>
+                <span class="pill <%= session.status_label %>"><%= session.status_label %></span>
+              </div>
+              <p><strong>Data:</strong> <%= session.date %></p>
+              <p><strong>Horário:</strong> <%= session.time %></p>
+              <p><strong>Capacidade:</strong> <%= session.capacity %></p>
+              <p><strong>Reservas ativas:</strong> <%= session.occupancy %></p>
+              <p><strong>Vagas restantes:</strong> <%= session.remaining %></p>
+
+              <% if (session.reservations && session.reservations.length) { %>
+                <div class="reservation-list-block">
+                  <h4>Reservas</h4>
+                  <% session.reservations.forEach((reservation) => { %>
+                    <div class="reservation-item admin-reservation">
+                      <div>
+                        <strong><%= reservation.student_name %></strong>
+                        <span class="status-tag <%= reservation.status %>"><%= reservation.status %></span>
+                      </div>
+                      <% if (reservation.status === 'confirmed') { %>
+                        <form method="post" action="/admin/reservations/<%= reservation.id %>/cancel">
+                          <button class="button danger" type="submit">Cancelar</button>
+                        </form>
+                      <% } %>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                <p class="muted-text">Sem reservas ativas nesta aula.</p>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
